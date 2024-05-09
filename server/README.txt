@@ -1,0 +1,3 @@
+-Create server and setup the server and database
+-Register and login router is created
+-Add authentication for the valid user to access the protected routes.

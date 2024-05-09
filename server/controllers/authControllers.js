@@ -1,37 +1,49 @@
 import { SALT_ROUNDS } from "../constants.js";
 import { db } from "../db/connect.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const register = async (request, response) => {
   try {
     const { email, password } = request.body;
-    // Check the email and password is provided
+
+    // Check if email and password are provided
     if (!email || !password) {
       return response.status(400).json({
-        status: "error",
+        success: false,
         message: "Please provide email and password",
       });
     }
-    // Checking if the user already exists
+
+    // Check if the user already exists
     const existingUser = await db.collection("users").findOne({ email });
-    if (existingUser)
-      return response
-        .status(409)
-        .json({ status: "error", message: "User Already Exist" });
-    // Hashing the password
+    if (existingUser) {
+      return response.status(409).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    // Saving new User to database
-    const doc = await db
-      .collection("users")
-      .insertOne({ email: email, password: hashedPassword });
-    return response
-      .status(201)
-      .json({ status: "success", message: "User created Successfully.." });
+
+    // Save new user to the database
+    await db.collection("users").insertOne({ email, password: hashedPassword });
+
+    // Return success message
+    return response.status(201).json({
+      success: true,
+      message: "User created successfully",
+    });
   } catch (error) {
-    // Catching any errors presents above conditions
-    return response
-      .status(500)
-      .json({ status: "error", message: "Internal server error" });
+    // Log the error for debugging
+    console.error("Error:", error);
+
+    // Return error message
+    return response.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
@@ -52,9 +64,32 @@ export const login = async (request, response) => {
     // Compare the provided password with the hashed password from the database
     const validPassword = await bcrypt.compare(password, userDoc.password);
 
-    // If passwords match, return success message
+    // If passwords match, sign jwt accesstoken and refreshtoken and return success message
     if (validPassword) {
+      const accessToken = jwt.sign(
+        { email: userDoc.email },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: process.env.JWT_EXPIRATION,
+        }
+      );
+      const refreshToken = jwt.sign(
+        {
+          email: userDoc.email,
+        },
+        process.env.JWT_REFRESH_TOKEN_SECRET,
+        {
+          expiresIn: process.env.JWT_REFRESH_EXPIRATION,
+        }
+      );
+      response.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        samesite: "None",
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
       return response.status(200).json({
+        accessToken,
         success: true,
         message: "Login successful",
       });
@@ -67,8 +102,31 @@ export const login = async (request, response) => {
   } catch (err) {
     // Handle unexpected errors
     console.error("Error:", err);
+    return response.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const refreshToken = async (request, response) => {
+  const token = request.cookies.jwt;
+  if (!token) {
     return response
-      .status(500)
-      .json({ success: false, error: "Internal server error" });
+      .status(401)
+      .json({ error: "Access denied.No refresh token provided" });
+  }
+  try {
+    // Get the token from cookies
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_TOKEN_SECRET);
+    if (!decoded) return response.status(406).json({ error: "Unauthorized" });
+
+    const accessToken = jwt.sign(
+      { email: decoded.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRATION,
+      }
+    );
+    return response.header("Authorization", accessToken).send(decoded.email);
+  } catch (error) {
+    return response.status(400).send("Invalid refresh token.");
   }
 };
