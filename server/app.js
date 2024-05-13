@@ -1,14 +1,16 @@
 import express from "express";
+import cors from "cors"
+import cookieParser from "cookie-parser"
+import { connect } from "./db/connect.js";
 import authRoutes from "./routers/authRoutes.js";
 import postRoutes from "./routers/postRoutes.js";
-import { connect } from "./db/connect.js";
-import cookieParser from "cookie-parser"
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 app.use(cookieParser())
 
 app.use("/auth", authRoutes);
