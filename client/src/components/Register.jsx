@@ -1,33 +1,50 @@
 import React, { useState } from 'react'
-import { AUTH_BASE_URL } from '../constants'
-import {useNavigate} from 'react-router-dom'
-
+import { useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { LoginUser, RegisterUser } from '../helpers/authHelpers'
 
 const Register = () => {
-  const [form, setForm] = useState({
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const [registerData, setRegisterData] = useState({
     name: '',
     email: '',
     password: '',
   })
-  const navigate = useNavigate()
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: '',
+  })
+
   // Handle Onchange event
   const handleOnChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    pathname === '/register'
+      ? setRegisterData({ ...registerData, [e.target.name]: e.target.value })
+      : setLoginData({ ...loginData, [e.target.name]: e.target.value })
   }
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(AUTH_BASE_URL + 'register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-        },
-        body: JSON.stringify(form),
-      })
-      const json = await response.json()
-      if (!json.success) return window.alert(json?.message)
-      else return window.alert(json?.message) && navigate('/')
+      let response
+      if (pathname === '/register') {
+        response = await RegisterUser(registerData)
+        setRegisterData({
+          name: '',
+          email: '',
+          password: '',
+        })
+      } else {
+        response = await LoginUser(loginData)
+        setLoginData({
+          email: '',
+          password: '',
+        })
+      }
+      if (!response.success) return window.alert(response?.message)
+      navigate('/')
+      return window.alert(response?.message)
     } catch (error) {
+      console.log(error)
       window.alert('Error: ', error)
     }
   }
@@ -37,20 +54,24 @@ const Register = () => {
       <div className="text-center bg-teal-400 sm:w-2/3 md:w-1/3 lg:w-1/3 py-3 px-5 m-3 rounded-lg text-white ">
         <h1 className=" mt-2 font-semibold text-xl ">Register</h1>
         <form className="p-5" onSubmit={(e) => handleFormSubmit(e)}>
-          <input
-            className="w-full m-2 rounded-md p-2 shadow-sm bg-transparent placeholder:text-white border outline-white "
-            type="text"
-            placeholder="Username"
-            name="name"
-            value={form.name}
-            onChange={(e) => handleOnChange(e)}
-          />
+          {pathname === '/register' ? (
+            <input
+              className="w-full m-2 rounded-md p-2 shadow-sm bg-transparent placeholder:text-white border outline-white "
+              type="text"
+              placeholder="Username"
+              name="name"
+              value={registerData.name}
+              onChange={(e) => handleOnChange(e)}
+            />
+          ) : null}
           <input
             className="w-full m-2 rounded-md p-2 shadow-sm bg-transparent placeholder:text-white border outline-white"
             type="text"
             placeholder="Email"
             name="email"
-            value={form.email}
+            value={
+              pathname === '/register' ? registerData.email : loginData.email
+            }
             onChange={(e) => handleOnChange(e)}
           />
           <input
@@ -58,7 +79,11 @@ const Register = () => {
             type="text"
             placeholder="Password"
             name="password"
-            value={form.password}
+            value={
+              pathname === '/register'
+                ? registerData.password
+                : loginData.password
+            }
             onChange={(e) => handleOnChange(e)}
           />
           <button
