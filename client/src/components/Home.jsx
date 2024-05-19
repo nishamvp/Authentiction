@@ -3,7 +3,7 @@ import PostContainer from './PostContainer'
 
 const Home = () => {
   return (
-    <div className='flex justify-center items-center h-svh'>
+    <div className='flex justify-center items-center h-svh bg-gray-600'>
       <PostContainer/>
     </div>
   )

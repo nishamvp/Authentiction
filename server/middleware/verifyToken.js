@@ -15,19 +15,24 @@ const verifyToken = async (request, response, next) => {
         .status(401)
         .json({ error: "Access denied. No refresh token provided" });
     }
-    const decoded = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_TOKEN_SECRET
-    );
+    try {
+      const decodedRefresh = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_TOKEN_SECRET
+      );
 
-    const accessToken = jwt.sign(
-      { email: decoded.email },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRATION,
-      }
-    );
-    return response.json(accessToken);
+      const newAccessToken = jwt.sign(
+        { email: decodedRefresh.email },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRATION }
+      );
+
+      return response.json({ accessToken: newAccessToken });
+    } catch (error) {
+      return response
+        .status(400)
+        .json({ error: "Refresh token expired or invalid" });
+    }
   }
 };
 
