@@ -20,7 +20,6 @@ const PostContainer = () => {
       return window.alert('Error in createing a post')
     }
   }
-  console.log(post)
   return (
     <div
       className="bg-primary p-4 m-4 rounded-md xs:w-12/12 sm:w-8/12 md:w-6/12 shadow-lg"
