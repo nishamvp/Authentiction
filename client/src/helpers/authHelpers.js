@@ -10,6 +10,7 @@ export const RegisterUser = async (registerData) => {
       body: JSON.stringify(registerData),
     });
     const json = await response.json();
+    
     return json;
   } catch (error) {
     console.error("error" + error);
@@ -26,6 +27,7 @@ export const LoginUser = async (loginData) => {
       body: JSON.stringify(loginData),
     });
     const json = await response.json();
+    localStorage.setItem('accessToken',JSON.stringify(json.accessToken)) 
     return json;
   } catch (error) {
     console.error("error" + error);

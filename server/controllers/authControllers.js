@@ -84,9 +84,9 @@ export const login = async (request, response) => {
       );
       response.cookie("jwt", refreshToken, {
         httpOnly: true,
-        samesite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "None",
+        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        maxAge: 72 * 60 * 60 * 1000, // 72 hours
       });
       return response.status(200).json({
         accessToken,
@@ -108,6 +108,7 @@ export const login = async (request, response) => {
 
 export const refreshToken = async (request, response) => {
   const token = request.cookies.jwt;
+  console.log(token)
   if (!token) {
     return response
       .status(401)
