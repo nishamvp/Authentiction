@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 const verifyToken = async (request, response, next) => {
   const refreshToken = request.cookies.jwt;
   const accessToken = request.headers["access-token"];
+  console.log(refreshToken)
   if (!refreshToken && !accessToken)
     return response.status(401).json({ error: "No token Provided" });
   try {

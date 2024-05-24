@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Provider, useSelector } from 'react-redux'
+import { Provider } from 'react-redux'
 import Home from './components/Home'
 import Register from './components/Register'
 import ProtectedRoute from './components/auth/ProtectedRoute'

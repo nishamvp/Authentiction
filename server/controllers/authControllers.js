@@ -83,8 +83,9 @@ export const login = async (request, response) => {
         }
       );
       response.cookie("jwt", refreshToken, {
+        path:'/',
         httpOnly: true,
-        sameSite: "None",
+        sameSite: "none",
         secure: process.env.NODE_ENV === 'production', // Set to true in production
         maxAge: 72 * 60 * 60 * 1000, // 72 hours
       });
