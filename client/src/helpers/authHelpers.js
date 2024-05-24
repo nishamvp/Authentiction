@@ -27,7 +27,7 @@ export const LoginUser = async (loginData) => {
       body: JSON.stringify(loginData),
     });
     const json = await response.json();
-    localStorage.setItem('accessToken',JSON.stringify(json.accessToken)) 
+    localStorage.setItem('Authorization',JSON.stringify(json.accessToken)) 
     return json;
   } catch (error) {
     console.error("error" + error);

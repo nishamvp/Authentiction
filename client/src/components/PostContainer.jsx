@@ -16,24 +16,26 @@ const PostContainer = () => {
     if (!post.post || !post.location)return  window.alert('All fields required')
     try {
       const response = await CreatePost(post)
+      if(response.success) window.alert("Post created successfully")
+      else window.alert("ERROR in creating post")
     } catch (error) {
       return window.alert('Error in createing a post')
     }
   }
   return (
     <div
-      className="bg-primary p-4 m-4 rounded-md xs:w-12/12 sm:w-8/12 md:w-6/12 shadow-lg"
+      className="p-4 m-4 rounded-md shadow-lg bg-primary xs:w-12/12 sm:w-8/12 md:w-6/12"
       onSubmit={(e) => handleSubmit(e)}
     >
-      <h1 className="text-center m-3 font-semibold text-xl text-slate-200">
+      <h1 className="m-3 text-xl font-semibold text-center text-slate-200">
         Let us Create a Post
       </h1>
-      <form className="flex flex-col gap-3 text-slate-200  px-3">
+      <form className="flex flex-col gap-3 px-3 text-slate-200">
         <textarea
           rows={8}
           type="text"
           placeholder="Text here.."
-          className="p-2 bg-primary outline-slate-200 border border-slate-200  rounded-md"
+          className="p-2 border rounded-md bg-primary outline-slate-200 border-slate-200"
           onChange={(e) => handleChange(e)}
           name="post"
           value={post.post}
@@ -41,14 +43,14 @@ const PostContainer = () => {
         <input
           type="text"
           placeholder="Locality here"
-          className="p-2  bg-primary  outline-slate-200 border border-slate-200 rounded-md"
+          className="p-2 border rounded-md bg-primary outline-slate-200 border-slate-200"
           onChange={(e) => handleChange(e)}
           name="location"
           value={post.location}
         />
         <button
           type="submit"
-          className="text-slate-200  p-3 my-3 bg-transparent border border-slate-200 hover:bg-slate-800"
+          className="p-3 my-3 bg-transparent border text-slate-200 border-slate-200 hover:bg-slate-800"
         >
           Create Post
         </button>
