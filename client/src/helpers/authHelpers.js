@@ -7,10 +7,11 @@ export const RegisterUser = async (registerData) => {
       headers: {
         "Content-Type": "application/json;charset=utf-8",
       },
+      credentials: "include", 
       body: JSON.stringify(registerData),
     });
     const json = await response.json();
-    
+
     return json;
   } catch (error) {
     console.error("error" + error);
@@ -24,10 +25,11 @@ export const LoginUser = async (loginData) => {
       headers: {
         "Content-Type": "application/json;charset=utf-8",
       },
+      credentials: "include",
       body: JSON.stringify(loginData),
     });
     const json = await response.json();
-    localStorage.setItem('Authorization',JSON.stringify(json.accessToken)) 
+    localStorage.setItem("Access-token", JSON.stringify(json.accessToken));
     return json;
   } catch (error) {
     console.error("error" + error);

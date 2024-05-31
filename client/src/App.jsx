@@ -5,7 +5,7 @@ import Register from './components/Register'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { store } from './store/store'
 
-function App() {
+ function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
@@ -23,7 +23,9 @@ function App() {
         </Routes>
       </BrowserRouter>
     </Provider>
-  )
+  );
 }
+
+
 
 export default App

@@ -13,24 +13,24 @@ const PostContainer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!post.post || !post.location)return  window.alert('All fields required')
+    if (!post.post || !post.location) return window.alert('All fields required')
     try {
       const response = await CreatePost(post)
-      if(response.success) window.alert("Post created successfully")
-      else window.alert("ERROR in creating post")
+      if (response.success) window.alert('Post created successfully')
+      else window.alert('ERROR in creating post')
     } catch (error) {
       return window.alert('Error in createing a post')
     }
   }
   return (
-    <div
-      className="p-4 m-4 rounded-md shadow-lg bg-primary xs:w-12/12 sm:w-8/12 md:w-6/12"
-      onSubmit={(e) => handleSubmit(e)}
-    >
+    <div className="p-4 m-4 rounded-md shadow-lg bg-primary xs:w-12/12 sm:w-8/12 md:w-6/12">
       <h1 className="m-3 text-xl font-semibold text-center text-slate-200">
         Let us Create a Post
       </h1>
-      <form className="flex flex-col gap-3 px-3 text-slate-200">
+      <form
+        className="flex flex-col gap-3 px-3 text-slate-200"
+        onSubmit={(e) => handleSubmit(e)}
+      >
         <textarea
           rows={8}
           type="text"

@@ -2,16 +2,16 @@ import jwt from "jsonwebtoken";
 
 const verifyToken = async (request, response, next) => {
   const refreshToken = request.cookies.jwt;
-  const accessToken = request.headers["Authorization"];
+  const accessToken = request.headers["access-token"];
+
   if (!refreshToken && !accessToken)
     return response.status(401).json({ error: "No token Provided" });
+
   try {
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
-    console.log('here')
     request.email = decoded.email;
     return next();
   } catch (error) {
-    console.log(error)
     if (!refreshToken) {
       return response
         .status(401)
@@ -28,8 +28,9 @@ const verifyToken = async (request, response, next) => {
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRATION }
       );
+
       request.email = decodedRefresh.email;
-      response.header("Authorization", newAccessToken)
+      response.setHeader("Access-token", newAccessToken);
       return next();
     } catch (error) {
       return response
@@ -40,3 +41,4 @@ const verifyToken = async (request, response, next) => {
 };
 
 export default verifyToken;
+

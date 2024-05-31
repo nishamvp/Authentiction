@@ -53,7 +53,6 @@ export const login = async (request, response) => {
   try {
     // Check if the user email is already registered
     const userDoc = await db.collection("users").findOne({ email });
-
     // If userDoc is null, return a generic error message
     if (!userDoc) {
       return response
@@ -85,7 +84,7 @@ export const login = async (request, response) => {
       response.cookie("jwt", refreshToken, {
         path:'/',
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "Lax",
         secure: process.env.NODE_ENV === 'production', // Set to true in production
         maxAge: 72 * 60 * 60 * 1000, // 72 hours
       });
@@ -107,28 +106,3 @@ export const login = async (request, response) => {
   }
 };
 
-export const refreshToken = async (request, response) => {
-  const token = request.cookies.jwt;
-  console.log(token)
-  if (!token) {
-    return response
-      .status(401)
-      .json({ error: "Access denied.No refresh token provided" });
-  }
-  try {
-    // Get the token from cookies
-    const decoded = jwt.verify(token, process.env.JWT_REFRESH_TOKEN_SECRET);
-    if (!decoded) return response.status(406).json({ error: "Unauthorized" });
-
-    const accessToken = jwt.sign(
-      { email: decoded.email },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRATION,
-      }
-    );
-    return response.header("Authorization", accessToken).send(decoded.email);
-  } catch (error) {
-    return response.status(400).send("Invalid refresh token.");
-  }
-};

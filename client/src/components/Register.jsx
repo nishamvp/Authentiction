@@ -50,13 +50,16 @@ const Register = () => {
         })
       }
 
-      if (!response.success) return window.alert(response?.message)
+      if (!response.success) {
+        return window.alert(response?.message || 'An error occurred')
+      }
+
       dispatch(login(response))
       navigate('/')
-      window.alert(response?.message)
+      window.alert(response?.message || 'Success')
     } catch (error) {
-      console.error(error)
-      window.alert('Error: ' + error.message)
+      console.error('Error:', error)
+      window.alert('Error: ' + (error.message || 'An error occurred'))
     }
   }
 
