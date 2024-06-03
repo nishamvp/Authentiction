@@ -35,3 +35,13 @@ export const LoginUser = async (loginData) => {
     console.error("error" + error);
   }
 };
+
+export const GoogleSignIn = async ()=>{
+  try {
+    const response = await fetch(AUTH_BASE_URL + "consentScreen");
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    console.error("error" + error);
+  }
+}

@@ -1,24 +1,23 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Outlet } from 'react-router-dom'
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = () => {
   const navigate = useNavigate()
   const { user } = useSelector((store) => store.auth)
+  const token = localStorage.getItem('Access-token')
 
   useEffect(() => {
-    if (!user) {
+    if (!token) {
       navigate('/login')
-    } else {
-      navigate('/')
     }
-  }, [user, navigate])
+  }, [token, navigate])
 
-  if (!user) {
+  if (!token) {
     return <p>Loading...</p> // Or a loading spinner
   }
 
-  return children
+  return <Outlet />
 }
 
 export default ProtectedRoute

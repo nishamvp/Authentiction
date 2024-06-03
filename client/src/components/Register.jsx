@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { LoginUser, RegisterUser } from '../helpers/authHelpers'
+import { useDispatch } from 'react-redux'
+import { GoogleSignIn, LoginUser, RegisterUser } from '../helpers/authHelpers'
 import { login } from '../store/authSlice'
 
 const Register = () => {
   const { pathname } = useLocation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { user } = useSelector((store) => store.auth)
+  const token = localStorage.getItem('Access-token')
   const [registerData, setRegisterData] = useState({
     name: '',
     email: '',
@@ -20,8 +20,9 @@ const Register = () => {
   })
 
   useEffect(() => {
-    if (user) navigate('/')
-  }, [user])
+    if (token) navigate('/')
+    else navigate('/login')
+  }, [token])
 
   const handleOnChange = (e) => {
     if (pathname === '/register') {
@@ -60,6 +61,15 @@ const Register = () => {
     } catch (error) {
       console.error('Error:', error)
       window.alert('Error: ' + (error.message || 'An error occurred'))
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const googleSignIn = await GoogleSignIn()
+      console.log(googleSignIn)
+    } catch (error) {
+      console.error('Error:', error)
     }
   }
 
@@ -114,6 +124,7 @@ const Register = () => {
               : "Don't have an account? Register here"}
           </p>
         </form>
+        <button onClick={handleGoogleSignIn}>Sign In with Google</button>
       </div>
     </div>
   )
