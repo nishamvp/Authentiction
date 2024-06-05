@@ -7,7 +7,7 @@ export const RegisterUser = async (registerData) => {
       headers: {
         "Content-Type": "application/json;charset=utf-8",
       },
-      credentials: "include", 
+      credentials: "include",
       body: JSON.stringify(registerData),
     });
     const json = await response.json();
@@ -36,12 +36,15 @@ export const LoginUser = async (loginData) => {
   }
 };
 
-export const GoogleSignIn = async ()=>{
+export const GoogleSignIn = async () => {
   try {
-    const response = await fetch(AUTH_BASE_URL + "consentScreen");
+    const response = await fetch(AUTH_BASE_URL + "consentScreen", {
+      mode: "no-cors",
+    });
+    console.log(response)
     const json = await response.json();
     return json;
   } catch (error) {
     console.error("error" + error);
   }
-}
+};

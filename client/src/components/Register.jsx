@@ -67,7 +67,6 @@ const Register = () => {
   const handleGoogleSignIn = async () => {
     try {
       const googleSignIn = await GoogleSignIn()
-      console.log(googleSignIn)
     } catch (error) {
       console.error('Error:', error)
     }
