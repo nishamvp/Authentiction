@@ -39,9 +39,8 @@ export const LoginUser = async (loginData) => {
 export const GoogleSignIn = async () => {
   try {
     const response = await fetch(AUTH_BASE_URL + "consentScreen", {
-      mode: "no-cors",
+      method: "POST",
     });
-    console.log(response)
     const json = await response.json();
     return json;
   } catch (error) {

@@ -2,6 +2,9 @@ import { SALT_ROUNDS } from "../constants.js";
 import { db } from "../db/connect.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const register = async (request, response) => {
   try {
@@ -106,19 +109,41 @@ export const login = async (request, response) => {
   }
 };
 
-export const loginWithGoogle = async (req, res) => {
-  const GOOGLE_OAUTH_URL = process.env.GOOGLE_OAUTH_URL;
+// export const loginWithGoogle = async (req, res) => {
+//   const GOOGLE_OAUTH_URL = process.env.GOOGLE_OAUTH_URL;
+//   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+//   const GOOGLE_CALLBACK_URL = "http%3A//localhost:3000/auth/callback";
+//   const state = "called";
+//   const GOOGLE_OAUTH_SCOPES = [
+//     "https%3A//www.googleapis.com/auth/userinfo.email",
+//     "https%3A//www.googleapis.com/auth/userinfo.profile",
+//   ];
+//   try {
+//     const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
+//     const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${GOOGLE_OAUTH_URL}?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_CALLBACK_URL}&access_type=offline&response_type=code&state=${state}&scope=${scopes}`;
+//     console.log("get call");
+//     res.redirect(GOOGLE_OAUTH_CONSENT_SCREEN_URL);
+//   } catch (error) {}
+// };
+
+export const googleAuth = async (req, res) => {
+  console.log('auth reached')
   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-  const GOOGLE_CALLBACK_URL = "http%3A//localhost:3000/auth/callback";
-  const state = "called"
-  const GOOGLE_OAUTH_SCOPES = [
-    "https%3A//www.googleapis.com/auth/userinfo.email",
-    "https%3A//www.googleapis.com/auth/userinfo.profile",
-  ];
+  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUrl = "http://localhost:3000/auth/callback";
   try {
-    const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
-    const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${GOOGLE_OAUTH_URL}?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_CALLBACK_URL}&access_type=offline&response_type=code&state=${state}&scope=${scopes}`;
-    console.log('get call')
-    res.redirect(GOOGLE_OAUTH_CONSENT_SCREEN_URL);
-  } catch (error) {}
+    const auth = new OAuth2Client(
+      GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET,
+      redirectUrl,
+    );
+    const authorizeUrl = auth.generateAuthUrl({
+      access_type: "offline",
+      scope: "https://www.googleapis.com/auth/userinfo.profile openid",
+      prompt: "consent",
+    });
+    res.json({ url: authorizeUrl });
+  } catch (error) {
+    console.log('error occured',error)
+  }
 };

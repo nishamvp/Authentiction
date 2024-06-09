@@ -66,22 +66,23 @@ const Register = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      const googleSignIn = await GoogleSignIn()
+      const signInObj = await GoogleSignIn()
+      window.location.href=signInObj.url
     } catch (error) {
       console.error('Error:', error)
     }
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="text-center bg-teal-400 sm:w-2/3 md:w-1/3 lg:w-1/3 py-3 px-5 m-3 rounded-lg text-white">
-        <h1 className="mt-2 font-semibold text-xl">
+    <div className="flex items-center justify-center h-screen">
+      <div className="px-5 py-3 m-3 text-center text-white bg-teal-400 rounded-lg sm:w-2/3 md:w-1/3 lg:w-1/3">
+        <h1 className="mt-2 text-xl font-semibold">
           {pathname === '/register' ? 'Register' : 'Login'}
         </h1>
         <form className="p-5" onSubmit={handleFormSubmit}>
           {pathname === '/register' && (
             <input
-              className="w-full m-2 rounded-md p-2 shadow-sm bg-transparent placeholder:text-white border outline-white"
+              className="w-full p-2 m-2 bg-transparent border rounded-md shadow-sm placeholder:text-white outline-white"
               type="text"
               placeholder="Username"
               name="name"
@@ -90,7 +91,7 @@ const Register = () => {
             />
           )}
           <input
-            className="w-full m-2 rounded-md p-2 shadow-sm bg-transparent placeholder:text-white border outline-white"
+            className="w-full p-2 m-2 bg-transparent border rounded-md shadow-sm placeholder:text-white outline-white"
             type="email"
             placeholder="Email"
             name="email"
@@ -100,7 +101,7 @@ const Register = () => {
             onChange={handleOnChange}
           />
           <input
-            className="w-full m-2 rounded-md p-2 shadow-sm bg-transparent placeholder:text-white border outline-white"
+            className="w-full p-2 m-2 bg-transparent border rounded-md shadow-sm placeholder:text-white outline-white"
             type="password"
             placeholder="Password"
             name="password"
@@ -113,7 +114,7 @@ const Register = () => {
           />
           <button
             type="submit"
-            className="bg-transparent border p-3 m-2 w-full"
+            className="w-full p-3 m-2 bg-transparent border"
           >
             {pathname === '/register' ? 'Sign Up' : 'Login'}
           </button>
