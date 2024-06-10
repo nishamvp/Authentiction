@@ -127,7 +127,6 @@ export const login = async (request, response) => {
 // };
 
 export const googleAuth = async (req, res) => {
-  console.log('auth reached')
   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
   const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
   const redirectUrl = "http://localhost:3000/auth/callback";
@@ -135,7 +134,7 @@ export const googleAuth = async (req, res) => {
     const auth = new OAuth2Client(
       GOOGLE_CLIENT_ID,
       GOOGLE_CLIENT_SECRET,
-      redirectUrl,
+      redirectUrl
     );
     const authorizeUrl = auth.generateAuthUrl({
       access_type: "offline",
@@ -144,6 +143,51 @@ export const googleAuth = async (req, res) => {
     });
     res.json({ url: authorizeUrl });
   } catch (error) {
-    console.log('error occured',error)
+    console.log("error occured", error);
+  }
+};
+
+export const googleCallback = async (req, res) => {
+  const getUserData = async (access_token) => {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const redirectUrl = "http://localhost:3000/auth/callback";
+  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+  const code = req.query.code;
+
+  try {
+    const auth = new OAuth2Client(
+      GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET,
+      redirectUrl
+    );
+    const tokenResponse = await auth.getToken(code);
+    const tokens = tokenResponse.tokens;
+    auth.setCredentials(tokens);
+    await getUserData(tokens.access_token);
+
+    res.cookie("refreshToken", tokens.refresh_token, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      maxAge: 72 * 60 * 60 * 1000, // 72 hours
+    });
+    res.redirect(
+      `http://localhost:5173/login/?accessToken=${tokens.access_token}`
+    );
+  } catch (error) {
+    console.error("Error during authentication:", error);
+    res.status(500).send("Authentication failed");
   }
 };

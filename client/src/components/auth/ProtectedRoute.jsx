@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
   const token = localStorage.getItem('Access-token')
 
   useEffect(() => {
-    if (!token) {
+    if (!token ) {
       navigate('/login')
     }
   }, [token, navigate])
