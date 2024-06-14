@@ -9,6 +9,8 @@ const Register = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const token = localStorage.getItem('Access-token')
+  const searchParams = new URLSearchParams(window.location.search)
+
   const [registerData, setRegisterData] = useState({
     name: '',
     email: '',
@@ -20,8 +22,14 @@ const Register = () => {
   })
 
   useEffect(() => {
-    if (token) navigate('/')
-    else navigate('/login')
+    const accessToken = searchParams.get('accessToken')
+    if (accessToken) localStorage.setItem('Access-token', accessToken)
+
+    if (token) {
+      navigate('/')
+    } else {
+      navigate('/login')
+    }
   }, [token])
 
   const handleOnChange = (e) => {
@@ -67,7 +75,7 @@ const Register = () => {
   const handleGoogleSignIn = async () => {
     try {
       const signInObj = await GoogleSignIn()
-      window.location.href=signInObj.url
+      window.location.href = signInObj.url
     } catch (error) {
       console.error('Error:', error)
     }

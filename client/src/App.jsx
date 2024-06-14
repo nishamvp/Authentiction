@@ -6,6 +6,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import { store } from './store/store'
 import About from './components/About'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import Redirect from './components/Redirect'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           </Route>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Register />} />
+          <Route path="/redirect" element={<Redirect />} />
         </Routes>
         {/* </GoogleOAuthProvider> */}
       </BrowserRouter>
